@@ -52,6 +52,11 @@ class DiamondFinder(defaultdict):
         return '\n'.join(self.keys())
 
     def scan(self, source=None, tag=None):
+        """
+        Public-facing scan function. Scan strings or text streams.
+        Set the tag argument to tag where the diamond was found.
+        The tag will also be expanded to include the line number.
+        """
         if source is None:
             return
         if tag is None:
@@ -64,12 +69,17 @@ class DiamondFinder(defaultdict):
             self.scanstream(source, tag)
 
     def scantext(self, text, tag=()):
+        """Scan text string for diamonds."""
         lines = text.split('\n')
         for count, line in enumerate(lines, 1):
             linetag = tag + (count,)
             self.scanline(line + '\n', linetag)
 
     def scandir(self, directory, deep=False, tag=(), **kwargs):
+        """
+        Scan all files in directory.
+        If deep is set to True, scan nested files too.
+        """
         dirtag = tag + (directory,)
         if deep:
             for root, dirs, files in os.walk(directory):
@@ -92,15 +102,25 @@ class DiamondFinder(defaultdict):
                     )
 
     def scanfile(self, file, include=None, exclude=None, relpath=None, tag=()):
+        """
+        Scan a file for diamonds.
+        Extensions can be set to a list of file extensions to check,
+            other file types are not opened or scanned.
+        """
         if not self.check_extension(file, include, exclude):
             return
         filetag = file if relpath is None else os.path.relpath(file, relpath)
         tag = tag + (filetag,)
+        # TODO: We need a patch when the encoding is not utf-8
         with open(file, mode='r', encoding='utf-8') as stream:
             self.scanstream(stream, tag)
 
     @staticmethod
     def check_extension(file, include=None, exclude=None):
+        """
+        Check whether the file extension is
+        in the extensions to include and not in the extensions to exclude.
+        """
         extension = pathlib.Path(file).suffix
         if include is not None:
             if isinstance(include, str):
@@ -115,6 +135,7 @@ class DiamondFinder(defaultdict):
         return True
 
     def scanstream(self, stream, tag=()):
+        """Scan a text stream, such as a io.TextIOBase object."""
         count = 1
         while True:
             try:
@@ -133,6 +154,11 @@ class DiamondFinder(defaultdict):
                 count += 1
 
     def scanline(self, line, tag=()):
+        """
+        Scan one line of text for diamonds.
+        The line must end with "\n".
+        """
+        # TODO: We need a patch when the encoding is not utf-8
         diamond_array = bytearray(self.maxlen)
         index = 0
         for char in line:
