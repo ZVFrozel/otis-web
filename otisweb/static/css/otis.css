@@ -6,16 +6,33 @@ body {
 #header {
   background-color: #5266c0;
   border: 3px solid #2233b2;
+  border-radius: 0px;
 }
 #main {
   background-color: #72fee1;
+  padding: 0px;
+  border: 0px;
+  border-radius: 0px;
 }
 #side {
   background-color: #b2fee1;
+  border: 0px;
+  border-radius: 0px;
+}
+#email_box {
+  border: 0px;
+}
+
+div.entry {
+  margin-top: 0px;
+  padding-top: 9px;
 }
 
 div.entrywrap {
   background-color: #ffffff;
+  margin: 0px;
+  border: 0px;
+  border-radius: 0px;
 }
 #navigation_box {
   background-color: #ccccff;
